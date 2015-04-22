@@ -4,10 +4,10 @@ class CreatePermits < ActiveRecord::Migration
       t.string :permit_number
       t.string :streetname
       t.string :cross_street_1
-      t.string :corss_street_2
+      t.string :cross_street_2
       t.string :permit_type
       t.string :agent
-      t.string :agent_phone
+      t.string :agentphone
       t.string :permit_purpose
       t.date :approved_date
       t.string :status
@@ -18,7 +18,7 @@ class CreatePermits < ActiveRecord::Migration
       t.string :permit_address
       t.string :contact
       t.string :inspector
-      t.string :curb_ramp_work 
+      t.boolean :curbrampwork 
       t.decimal :x
       t.decimal :y
       t.decimal :latitude 

@@ -11,9 +11,34 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 0) do
+ActiveRecord::Schema.define(version: 20150422053834) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "permits", force: :cascade do |t|
+    t.string  "permit_number"
+    t.string  "streetname"
+    t.string  "cross_street_1"
+    t.string  "cross_street_2"
+    t.string  "permit_type"
+    t.string  "agent"
+    t.string  "agentphone"
+    t.string  "permit_purpose"
+    t.date    "approved_date"
+    t.string  "status"
+    t.string  "cnn"
+    t.integer "permit_zipcode"
+    t.date    "permit_start_date"
+    t.date    "permit_end_date"
+    t.string  "permit_address"
+    t.string  "contact"
+    t.string  "inspector"
+    t.boolean "curbrampwork"
+    t.decimal "x"
+    t.decimal "y"
+    t.decimal "latitude"
+    t.decimal "longitude"
+  end
 
 end
