@@ -1,4 +1,4 @@
 Rails.application.routes.draw do
   root to: 'pages#index'
-  resources :permits, only: [:index]
+  get 'permit_kml', to: 'pages#permit_kml'
 end

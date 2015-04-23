@@ -24,4 +24,21 @@ class Permit < ActiveRecord::Base
       puts "Problem creating permit: #{data[:permit_number]}"
     end
   end
+
+  def map_label
+    "#{self.permit_type} (#{self.permit_number})"
+  end
+
+  def map_html
+    phone = self.contact.present? ? self.contact : self.agentphone
+
+    <<-eos
+      <![CDATA[
+        <h1><strong>Agent Phone:</strong> #{self.agentphone}</h1>
+        <h1><strong>24/7 Contact:</strong> #{self.contact}</h1>
+        <h1><strong>Agent:</strong> #{self.agent}</h1>
+        <h1><strong>Purpose:</strong> #{self.permit_purpose}</h1>
+      ]]>
+    eos
+  end
 end
