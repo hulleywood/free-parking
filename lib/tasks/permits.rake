@@ -22,6 +22,7 @@ namespace :permits do
     end
 
     Permit.mass_create(all_responses)
+    Tools::KmlGenerator.generate_from_permits
 
     tend = Time.now
     puts "Time to complete: #{tend - tstart} seconds"

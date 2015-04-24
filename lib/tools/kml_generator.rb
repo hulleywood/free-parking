@@ -9,9 +9,7 @@ module Tools
 
 
     def self.generate_from_permits
-      puts '*'*80
       file_path = "public/permits.kml"
-      puts file_path
       permits = Permit.all.first(100)
       ::Nokogiri::XML::Builder.with(@kml.doc.at('kml')) do |xml|
         permits.each do |permit|
