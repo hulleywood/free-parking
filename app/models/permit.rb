@@ -30,8 +30,6 @@ class Permit < ActiveRecord::Base
   end
 
   def map_html
-    phone = self.contact.present? ? self.contact : self.agentphone
-
     <<-eos
       <![CDATA[
         <h1><strong>Agent Phone:</strong> #{self.agentphone}</h1>

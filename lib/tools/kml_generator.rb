@@ -24,7 +24,8 @@ module Tools
 
     def self.create_placemark_from_permit(xml, permit)
       xml.name permit.map_label
-      xml.description permit.map_html
+      #xml.description permit.map_html
+      xml.description 'asdf'
       xml.Point do
         xml.coordinates "#{permit.longitude.to_f},#{permit.latitude.to_f},0"
       end
