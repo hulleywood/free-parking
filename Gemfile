@@ -16,6 +16,7 @@ gem 'jbuilder', '~> 2.0'
 gem 'sdoc', '~> 0.4.0', group: :doc
 
 gem 'soda-ruby', :require => 'soda'
+gem 'phone'
 
 # Use Unicorn as the app server
 gem 'unicorn'

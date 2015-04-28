@@ -17,6 +17,7 @@ class CreatePermits < ActiveRecord::Migration
       t.date :permit_end_date
       t.string :permit_address
       t.string :contact
+      t.string :contactphone
       t.string :inspector
       t.boolean :curbrampwork 
       t.decimal :x

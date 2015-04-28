@@ -33,6 +33,7 @@ ActiveRecord::Schema.define(version: 20150422053834) do
     t.date    "permit_end_date"
     t.string  "permit_address"
     t.string  "contact"
+    t.string  "contactphone"
     t.string  "inspector"
     t.boolean "curbrampwork"
     t.decimal "x"

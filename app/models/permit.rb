@@ -1,5 +1,7 @@
 class Permit < ActiveRecord::Base
 
+  before_save :sanitize_agentphone, :create_contactphone
+
   def self.mass_create(permit_datas)
     permit_datas.each do |permit_data|
       permit = Permit.find_by_permit_number(permit_data[:permit_number])
@@ -30,13 +32,35 @@ class Permit < ActiveRecord::Base
   end
 
   def map_html
-    <<-eos
-      <![CDATA[
-        <h1><strong>Agent Phone:</strong> #{self.agentphone}</h1>
+    if agentphone != contactphone
+      <<-eos
+        <h1><strong>Agent Phone:</strong> <a href="tel:#{agentphone}">#{agentphone}</a></h1>
+        <h1><strong>Contact Phone:</strong> <a href="tel:#{contactphone}">#{contactphone}</a></h1>
         <h1><strong>24/7 Contact:</strong> #{self.contact}</h1>
         <h1><strong>Agent:</strong> #{self.agent}</h1>
         <h1><strong>Purpose:</strong> #{self.permit_purpose}</h1>
-      ]]>
-    eos
+      eos
+    else
+      <<-eos
+        <h1><strong>Agent Phone:</strong> <a href="tel:#{agentphone}">#{agentphone}</a></h1>
+        <h1><strong>24/7 Contact:</strong> #{self.contact}</h1>
+        <h1><strong>Agent:</strong> #{self.agent}</h1>
+        <h1><strong>Purpose:</strong> #{self.permit_purpose}</h1>
+      eos
+    end
+  end
+
+  def sanitize_agentphone
+    phone_number = Phoner::Phone.parse(agentphone)
+    if phone_number.present?
+      self.agentphone = phone_number.format(:default_with_extension).gsub(/x/, ',')
+    end
+  end
+
+  def create_contactphone
+    phone_number = Phoner::Phone.parse(contact)
+    if phone_number.present?
+      self.contactphone = phone_number.format(:default_with_extension).gsub(/x/, ',')
+    end
   end
 end
