@@ -11,7 +11,7 @@ module Tools
 
     def self.generate_from_permits
       file_path = "public/permits.kml"
-      permits = Permit.all.first(100)
+      permits = Permit.all
       ::Nokogiri::XML::Builder.with(@kml.doc.at('kml')) do |xml|
         xml.Document do
           permits.each do |permit|
