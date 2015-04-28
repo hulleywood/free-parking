@@ -32,22 +32,18 @@ class Permit < ActiveRecord::Base
   end
 
   def map_html
-    if agentphone != contactphone && contactphone.present?
-      <<-eos
-        <p><strong>Agent Phone:</strong> <a href='tel:#{agentphone}'>#{agentphone}</a></p>
-        <p><strong>Contact Phone:</strong> <a href='tel:#{contactphone}'>#{contactphone}</a></p>
-        <p><strong>24/7 Contact:</strong> #{self.contact}</p>
-        <p><strong>Agent:</strong> #{self.agent}</p>
-        <p><strong>Purpose:</strong> #{self.permit_purpose}</p>
-      eos
-    else
-      <<-eos
-        <p><strong>Agent Phone:</strong> <a href='tel:#{agentphone}'>#{agentphone}</a></p>
-        <p><strong>24/7 Contact:</strong> #{self.contact}</p>
-        <p><strong>Agent:</strong> #{self.agent}</p>
-        <p><strong>Purpose:</strong> #{self.permit_purpose}</p>
-      eos
+    str = "<![CDATA["
+    str << "<p><strong>Agent Phone:</strong> <a href='tel:#{agentphone}'>#{agentphone}</a></p>"
+    if agentphone != contactphone && contactphone.present? && contact.downcase != 'refer to agent'
+      str << "<p><strong>Contact Phone:</strong> <a href='tel:#{contactphone}'>#{contactphone}</a></p>"
+      str << "<p><strong>24/7 Contact:</strong> #{self.contact}</p>"
     end
+
+    str << "<p><strong>Agent:</strong> #{agent}</p>"
+    str << "<p><strong>Purpose:</strong> #{permit_purpose}</p>"
+    str << "]]>"
+
+    str
   end
 
   def sanitize_agentphone
