@@ -7,6 +7,7 @@ module Tools
       xml.kml(:xmlns => "http://www.opengis.net/kml/2.2")
     end
 
+    @doc = Nokogiri::XML::Document.new
 
     def self.generate_from_permits
       file_path = "public/permits.kml"
@@ -26,7 +27,9 @@ module Tools
 
     def self.create_placemark_from_permit(xml, permit)
       xml.name permit.map_label
-      xml.description permit.map_html
+      xml.description do
+        xml.cdata permit.map_html
+      end
       xml.Point do
         xml.coordinates "#{permit.longitude.to_f},#{permit.latitude.to_f},0"
       end

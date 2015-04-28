@@ -32,8 +32,7 @@ class Permit < ActiveRecord::Base
   end
 
   def map_html
-    str = "<![CDATA["
-    str << "<p><strong>Agent Phone:</strong> <a href='tel:#{agentphone}'>#{agentphone}</a></p>"
+    str = "<p><strong>Agent Phone:</strong> <a href='tel:#{agentphone}'>#{agentphone}</a></p>"
     if agentphone != contactphone && contactphone.present? && contact.downcase != 'refer to agent'
       str << "<p><strong>Contact Phone:</strong> <a href='tel:#{contactphone}'>#{contactphone}</a></p>"
       str << "<p><strong>24/7 Contact:</strong> #{self.contact}</p>"
@@ -41,7 +40,6 @@ class Permit < ActiveRecord::Base
 
     str << "<p><strong>Agent:</strong> #{agent}</p>"
     str << "<p><strong>Purpose:</strong> #{permit_purpose}</p>"
-    str << "]]>"
 
     str
   end
