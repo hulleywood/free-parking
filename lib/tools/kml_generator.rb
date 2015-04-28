@@ -12,9 +12,11 @@ module Tools
       file_path = "public/permits.kml"
       permits = Permit.all.first(100)
       ::Nokogiri::XML::Builder.with(@kml.doc.at('kml')) do |xml|
-        permits.each do |permit|
-          xml.Placemark do
-            create_placemark_from_permit(xml, permit)
+        xml.Document do
+          permits.each do |permit|
+            xml.Placemark do
+              create_placemark_from_permit(xml, permit)
+            end
           end
         end
       end
@@ -24,8 +26,7 @@ module Tools
 
     def self.create_placemark_from_permit(xml, permit)
       xml.name permit.map_label
-      #xml.description permit.map_html
-      xml.description 'asdf'
+      xml.description permit.map_html
       xml.Point do
         xml.coordinates "#{permit.longitude.to_f},#{permit.latitude.to_f},0"
       end
