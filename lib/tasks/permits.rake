@@ -1,10 +1,26 @@
 namespace :permits do
-  desc 'Get latest permits and update DB'
-  task latest: :environment do
+  desc 'Remove permits that have expired'
+  task remove_old: :environment do
     tstart = Time.now
+    Rails.logger.info "Starting to remove old permits"
+
     min_date = tstart.strftime('%FT%T')
     max_date = min_date
+    old_permits = Permit.where("permit_end_date < ?", Time.now.strftime('%F'))
+    Rails.logger.info "Destroying #{old_permits.size} permits"
+    old_permits.destroy_all
 
+    tend = Time.now
+    Rails.logger.info "Completed removing old permits in #{tend - tstart} seconds"
+  end
+
+  desc 'Get latest permits and update DB'
+  task add_new: :environment do
+    tstart = Time.now
+    Rails.logger.info "Starting to add new permits"
+
+    min_date = tstart.strftime('%FT%T')
+    max_date = min_date
     client = SODA::Client.new({:domain => "data.sfgov.org", app_token: ENV['DATA_TOKEN']})
     base_query = {
       "$where" => "permit_start_date<'#{min_date}' AND permit_end_date>'#{max_date}'",
@@ -18,13 +34,24 @@ namespace :permits do
       response = client.get("b6tj-gt35", base_query.merge({ "$offset" => all_responses.length }))
       all_responses += response
       prev_response_count = response.length
-      puts "#{prev_response_count} permits fetched from the last API call"
+      Rails.logger.info "#{prev_response_count} permits fetched from the last API call"
     end
 
     Permit.mass_create(all_responses)
+    Rails.logger.info "Total permits in db: #{Permit.all.size}"
+
+    tend = Time.now
+    Rails.logger.info "Completed adding new permits in#{tend - tstart} seconds"
+  end
+
+  desc 'Create a kml file with permit data'
+  task create_kml: :environment do
+    tstart = Time.now
+    Rails.logger.info "Starting to create kml file"
+
     Tools::KmlGenerator.generate_from_permits
 
     tend = Time.now
-    puts "Time to complete: #{tend - tstart} seconds"
+    Rails.logger.info "Completed creating kml file in #{tend - tstart} seconds"
   end
 end
