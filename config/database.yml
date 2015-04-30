@@ -15,3 +15,5 @@ production:
   <<: *default
   database: bookhouse_production
   host: localhost
+  username: bookhouse
+  password: bookhouse
