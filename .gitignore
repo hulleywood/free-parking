@@ -37,3 +37,4 @@ bower.json
 
 /public/*.json
 /public/*.kml
+/public/assets/*
