@@ -5,3 +5,10 @@ body, html {
 .map-wrapper, #map-canvas {
   height: 100%;
 }
+
+.bootstrap-switch.bootstrap-switch-wrapper, .map-toggle {
+  position: absolute;
+  top: 25px;
+  right: 8px;
+  z-index: 1;
+}

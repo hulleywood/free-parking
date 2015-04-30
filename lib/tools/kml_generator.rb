@@ -34,5 +34,6 @@ module Tools
         xml.coordinates "#{permit.longitude.to_f},#{permit.latitude.to_f},0"
       end
     end
+
   end
 end

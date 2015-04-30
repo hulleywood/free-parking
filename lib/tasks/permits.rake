@@ -41,7 +41,7 @@ namespace :permits do
     Rails.logger.info "Total permits in db: #{Permit.all.size}"
 
     tend = Time.now
-    Rails.logger.info "Completed adding new permits in#{tend - tstart} seconds"
+    Rails.logger.info "Completed adding new permits in #{tend - tstart} seconds"
   end
 
   desc 'Create a kml file with permit data'
@@ -53,5 +53,16 @@ namespace :permits do
 
     tend = Time.now
     Rails.logger.info "Completed creating kml file in #{tend - tstart} seconds"
+  end
+
+  desc 'Create a json file with permit data'
+  task create_json: :environment do
+    tstart = Time.now
+    Rails.logger.info "Starting to create json file"
+
+    Tools::JsonGenerator.generate_from_permits
+
+    tend = Time.now
+    Rails.logger.info "Completed creating json file in #{tend - tstart} seconds"
   end
 end

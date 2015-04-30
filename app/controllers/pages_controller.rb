@@ -1,3 +1,5 @@
 class PagesController < ApplicationController
-  def index; end
+  def index
+    @show_cluster = request.fullpath == '/marker' ? false : true
+  end
 end
