@@ -2,21 +2,25 @@ class Permit < ActiveRecord::Base
 
   before_save :sanitize_agentphone, :create_contactphone
 
+  @@disallowed_types = ['TableChair', 'Display']
+
   def self.mass_create(permit_datas)
     permit_datas.each do |permit_data|
       permit = Permit.find_by_permit_number(permit_data[:permit_number])
       unless permit.present?
         Rails.logger.info "No permit record found for #{permit_data[:permit_number]}, creating record..."
-        Permit.create_from_api_data(permit_data)
+        unless @@disallowed_types.include?(permit_data[:permit_type])
+          Permit.create_from_api_data(permit_data) 
+        end
       end
     end
   end
 
   def self.create_from_api_data(data)
     params = {}
-    permitted = Permit.column_names.reject{|column| column == 'id'}
+    permitted_params = Permit.column_names.reject{|column| column == 'id'}
     data.to_hash.each do |k, v|
-      if permitted.include?(k) && v.present?
+      if permitted_params.include?(k) && v.present?
         params[k] = v
       end
     end
