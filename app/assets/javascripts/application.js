@@ -16,4 +16,5 @@
 //= require bootstrap-sprockets
 //= require_tree .
 //= require bootstrap-switch
+//= require cGWin
 //= require pages/index

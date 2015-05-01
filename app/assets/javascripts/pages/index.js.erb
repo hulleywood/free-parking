@@ -48,24 +48,42 @@
   function initJson(callback) {
     $.getJSON( window.jsonUrl, function( data ) {
       $.each( data, function( key, val ) {
-        var latLng = new google.maps.LatLng(val.latitude, val.longitude);
-        var marker = new google.maps.Marker({'position': latLng});
-
-        var fn = markerClick(createInfoWindowContent(val), latLng);
-        google.maps.event.addListener(marker, 'click', fn);
-        jsonMarkers.push(marker);
+        setMarker(val);
       });
 
-      jsonInfoWindow = new google.maps.InfoWindow();
+      jsonInfoWindow = new (GenCustomWindow())();
       jsonCluster = new MarkerClusterer(map, []);
       callback();
     });
   };
 
+  function setMarker(data) {
+    var position = new google.maps.LatLng(data.latitude, data.longitude);
+    var opts = {
+      map:map,
+      position:position,
+      draggable:false,
+      icon:{
+        url:"<%= asset_path('marker-v1.png') %>",
+        size:new google.maps.Size(40, 60),
+        scaledSize:new google.maps.Size(20, 30),
+        anchor:new google.maps.Point(10, 30)
+      }
+    };
+
+    var marker = new google.maps.Marker(opts);
+    jsonMarkers.push(marker);
+    google.maps.event.addListener(marker, 'click', function(){
+      jsonInfoWindow.setContent(createInfoWindowContent(data));
+      jsonInfoWindow.open(map, marker);
+    });
+  };
+
   function createInfoWindowContent(data) {
-    var content = "<div class='info-window-content'><h4>" + data.permit_number + " (" + data.permit_type + ")</h4>"; 
-      
-      content += "<p><strong>Agent:</strong> " + data.agent + " (<a href='tel:" + 
+    var content = "<div class='info-window-content'><div class='map-info-close glyphicon glyphicon-remove'></div><h4>" + data.permit_number + " (" +
+                  data.permit_type + ")</h4><p><strong>Location:</strong> " + data.streetname  +
+                  " between " + data.cross_street_1 + " and " + data.cross_street_2 +
+                  "</p><p><strong>Agent:</strong> " + data.agent + " (<a href='tel:" +
                   data.agentphone + "'>" + formatPhone(data.agentphone) + "</a>)</p>";
 
     if (  data.agentphone != data.contactphone &&

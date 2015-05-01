@@ -18,3 +18,31 @@ body, html {
     margin: 0;
   }
 }
+
+.map-info-window{
+  background: #323335;
+  color: #FFF;
+  border-radius:4px;
+  box-shadow:8px 8px 16px #222;
+  min-width:150px;
+  max-width:500px;
+  max-height:300px;
+  padding:5px 20px 10px;
+  overflow:hidden;
+  position:absolute;
+}
+
+.map-info-window .map-info-close{
+  float:right;
+  cursor:pointer;
+  margin-right:-5px;
+  margin-left:5px;
+}
+
+.map-info-window h5{
+  font-weight:bold;
+}
+
+.map-info-window p{
+  color: #FFF;
+}

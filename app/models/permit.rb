@@ -9,7 +9,7 @@ class Permit < ActiveRecord::Base
       unless @@disallowed_types.include?(permit_data[:permit_type])
         permits = Permit.where(permit_number: permit_data[:permit_number])
         if permits.present?
-          dup = false
+          dup = true
           #permits.each do |db_permit|
           #  if (permit_data[:streetname] == db_permit.streetname &&
           #      permit_data[:cross_street_1] == db_permit.cross_street_1 &&
@@ -50,7 +50,11 @@ class Permit < ActiveRecord::Base
       contactphone,
       permit_purpose,
       latitude,
-      longitude"
+      longitude,
+      streetname,
+      cross_street_1,
+      cross_street_2
+    "
   end
 
   def map_label
