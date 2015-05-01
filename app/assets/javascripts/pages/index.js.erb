@@ -4,6 +4,7 @@
       kmlLayer,
       jsonCluster,
       jsonInfoWindow,
+      selectedMarker,
       jsonMarkers = [];
 
   function init() {
@@ -17,7 +18,9 @@
     var sanFrancisco = new google.maps.LatLng(37.7833, -122.4167);
     var mapOptions = {
       zoom: 12,
-      center: sanFrancisco
+      center: sanFrancisco,
+      streetViewControl: false,
+      mapTypeControl: false
     };
     map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
   };
@@ -38,30 +41,62 @@
       };
       jsonInfoWindow = new (GenCustomWindow())();
       jsonCluster = new MarkerClusterer(map, [], clusterOptions);
+      $('.fixed-window').on('click', '.map-info-close', function(){
+        $('.fixed-window').hide();
+        if (selectedMarker) selectedMarker.setIcon(regularMarkerIcon());
+      })
       callback();
     });
   };
 
-  function setMarker(data) {
-    var position = new google.maps.LatLng(data.latitude, data.longitude);
-    var opts = {
-      map:map,
-      position:position,
-      draggable:false,
-      icon:{
-        url:"<%= asset_path('marker-v1.png') %>",
-        size:new google.maps.Size(40, 60),
-        scaledSize:new google.maps.Size(20, 30),
-        anchor:new google.maps.Point(10, 30)
-      }
+  function regularMarkerIcon(){
+    return {
+      url:"<%= asset_path('marker-v1-black.png') %>",
+      size:new google.maps.Size(40, 60),
+      scaledSize:new google.maps.Size(20, 30),
+      anchor:new google.maps.Point(10, 30)
     };
+  };
+
+  function selectedMarkerIcon(){
+    return {
+      url:"<%= asset_path('marker-v1-green.png') %>",
+      size:new google.maps.Size(40, 60),
+      scaledSize:new google.maps.Size(20, 30),
+      anchor:new google.maps.Point(10, 30)
+    };
+  };
+
+  function setMarker(data) {
+    var position = new google.maps.LatLng(data.latitude, data.longitude),
+        opts = {
+          map:map,
+          position:position,
+          draggable:false,
+          icon:regularMarkerIcon()
+        };
 
     var marker = new google.maps.Marker(opts);
     jsonMarkers.push(marker);
-    google.maps.event.addListener(marker, 'click', function(){
-      jsonInfoWindow.setContent(createInfoWindowContent(data));
-      jsonInfoWindow.open(map, marker);
-    });
+
+    google.maps.event.addListener(marker, 'click', (function () {
+      return function () {
+        jQuery( '.fixed-window' ).show();
+        jQuery( '.fixed-window' ).empty();
+        jQuery( '.fixed-window' ).append(createInfoWindowContent(data));
+        marker.setIcon(selectedMarkerIcon());
+        if (selectedMarker) selectedMarker.setIcon(regularMarkerIcon());
+        selectedMarker = marker;
+      }
+    })());
+
+    //google.maps.event.addListener(marker, 'click', function(){
+    //  jsonInfoWindow.setContent(createInfoWindowContent(data));
+    //  jsonInfoWindow.open(map, marker);
+    //  marker.setIcon(selectedIcon);
+    //  if (selectedMarker) selectedMarker.setIcon(regIcon);
+    //  selectedMarker = marker;
+    //});
   };
 
   function createInfoWindowContent(data) {
@@ -80,21 +115,6 @@
 
     content +=  "<p><strong>Purpose:</strong> " + data.permit_purpose + "</p></div>";
     return content;
-  };
-
-  function markerClick(content, latlng) {
-    return function(e) {
-      e.cancelBubble = true;
-      e.returnValue = false;
-      if (e.stopPropagation) {
-        e.stopPropagation();
-        e.preventDefault();
-      }
-
-      jsonInfoWindow.setContent(content);
-      jsonInfoWindow.setPosition(latlng);
-      jsonInfoWindow.open(map);
-    };
   };
 
   function hideKml() {

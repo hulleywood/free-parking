@@ -6,19 +6,6 @@ body, html {
   height: 100%;
 }
 
-.bootstrap-switch.bootstrap-switch-wrapper, .map-toggle {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  z-index: 1;
-}
-
-.info-window-content {
-  p {
-    margin: 0;
-  }
-}
-
 .map-info-window{
   background: #323335;
   color: #FFF;
@@ -30,19 +17,46 @@ body, html {
   padding:5px 20px 10px;
   overflow:hidden;
   position:absolute;
+  width:90%;
 }
 
-.map-info-window .map-info-close{
+.map-info-window .map-info-close, .fixed-window .map-info-close{
   float:right;
   cursor:pointer;
   margin-right:-5px;
   margin-left:5px;
 }
 
-.map-info-window h5{
+.map-info-window h5, .fixed-window h5{
   font-weight:bold;
 }
 
-.map-info-window p{
+.map-info-window p, .fixed-window p{
+  margin: 0;
   color: #FFF;
+  font-size: 11px;
+}
+
+.fixed-window {
+  display: none;
+  z-index:1;
+  background: #323335;
+  color: #FFF;
+  border-radius:4px;
+  box-shadow:8px 8px 16px #222;
+  min-width:150px;
+  max-width:500px;
+  max-height:300px;
+  padding:5px 20px 10px;
+  position: fixed;
+  width: 90%;
+  margin: 5% 5% 0 5%;
+};
+
+@media (min-width: 768px) {
+  .fixed-window {
+    margin: 0;
+    top: 30px;
+    right: 30px;
+  }
 }
