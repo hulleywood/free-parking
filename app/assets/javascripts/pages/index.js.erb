@@ -33,8 +33,11 @@
         setMarker(val);
       });
 
+      var clusterOptions = {
+        minimumClusterSize: 6
+      };
       jsonInfoWindow = new (GenCustomWindow())();
-      jsonCluster = new MarkerClusterer(map, []);
+      jsonCluster = new MarkerClusterer(map, [], clusterOptions);
       callback();
     });
   };
