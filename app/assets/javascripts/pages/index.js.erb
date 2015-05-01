@@ -7,27 +7,9 @@
       jsonMarkers = [];
 
   function init() {
-    $("input.map-toggle").bootstrapSwitch();
-    $("input.map-toggle").on('switchChange.bootstrapSwitch', function(event, state) {
-      if (state) {
-        showJson();
-        hideKml();
-      } else {
-        hideJson();
-        showKml();
-      }
-    });
-
-    var callback;
-    if ($("input.map-toggle").bootstrapSwitch('state')) {
-      callback = showJson;
-    } else {
-      callback = showKml;
-    }
-
     initMap();
     initKml(function(){
-      initJson(callback);
+      initJson(showJson);
     });
   };
 
