@@ -33,7 +33,9 @@ class Permit < ActiveRecord::Base
   def self.json_fields
     " permit_number,
       agentphone,
+      agent,
       contact,
+      contactphone,
       permit_purpose,
       latitude,
       longitude,
@@ -42,7 +44,7 @@ class Permit < ActiveRecord::Base
   end
 
   def map_label
-    "#{self.permit_type} (#{self.permit_number})"
+    "#{self.permit_number} (#{self.permit_type})"
   end
 
   def map_html
