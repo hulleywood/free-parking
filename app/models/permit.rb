@@ -6,10 +6,21 @@ class Permit < ActiveRecord::Base
 
   def self.mass_create(permit_datas)
     permit_datas.each do |permit_data|
-      permit = Permit.find_by_permit_number(permit_data[:permit_number])
-      unless permit.present?
-        Rails.logger.info "No permit record found for #{permit_data[:permit_number]}, creating record..."
-        unless @@disallowed_types.include?(permit_data[:permit_type])
+      unless @@disallowed_types.include?(permit_data[:permit_type])
+        permits = Permit.where(permit_number: permit_data[:permit_number])
+        if permits.present?
+          dup = false
+          #permits.each do |db_permit|
+          #  if (permit_data[:streetname] == db_permit.streetname &&
+          #      permit_data[:cross_street_1] == db_permit.cross_street_1 &&
+          #      permit_data[:cross_street_2] == db_permit.cross_street_2) ||
+          #     (permit_data[:longitude] == db_permit.longitude &&
+          #      permit_data[:latitude] == db_permit.latitude)
+          #    dup = true
+          #  end
+          #end
+          Permit.create_from_api_data(permit_data) unless dup
+        else
           Permit.create_from_api_data(permit_data) 
         end
       end
@@ -32,15 +43,14 @@ class Permit < ActiveRecord::Base
 
   def self.json_fields
     " permit_number,
+      permit_type,
       agentphone,
       agent,
       contact,
       contactphone,
       permit_purpose,
       latitude,
-      longitude,
-      permit_address,
-      permit_type"
+      longitude"
   end
 
   def map_label

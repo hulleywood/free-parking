@@ -22,8 +22,10 @@ namespace :permits do
     min_date = tstart.strftime('%FT%T')
     max_date = min_date
     client = SODA::Client.new({:domain => "data.sfgov.org", app_token: ENV['DATA_TOKEN']})
+    query = "permit_start_date<'#{min_date}' AND permit_end_date>'#{max_date}'" 
+    query << " AND permit_type!='TableChair' AND permit_type!='Display'"
     base_query = {
-      "$where" => "permit_start_date<'#{min_date}' AND permit_end_date>'#{max_date}'",
+      "$where" => query,
       "$order" => "permit_start_date ASC"
     }
 
@@ -38,6 +40,7 @@ namespace :permits do
     end
 
     Permit.mass_create(all_responses)
+    Rails.logger.info "Total permits from API: #{all_responses.length}"
     Rails.logger.info "Total permits in db: #{Permit.all.size}"
 
     tend = Time.now
