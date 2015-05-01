@@ -7,22 +7,11 @@ class Permit < ActiveRecord::Base
   def self.mass_create(permit_datas)
     permit_datas.each do |permit_data|
       unless @@disallowed_types.include?(permit_data[:permit_type])
-        permits = Permit.where(permit_number: permit_data[:permit_number])
-        if permits.present?
-          dup = true
-          #permits.each do |db_permit|
-          #  if (permit_data[:streetname] == db_permit.streetname &&
-          #      permit_data[:cross_street_1] == db_permit.cross_street_1 &&
-          #      permit_data[:cross_street_2] == db_permit.cross_street_2) ||
-          #     (permit_data[:longitude] == db_permit.longitude &&
-          #      permit_data[:latitude] == db_permit.latitude)
-          #    dup = true
-          #  end
-          #end
-          Permit.create_from_api_data(permit_data) unless dup
-        else
-          Permit.create_from_api_data(permit_data) 
-        end
+        num = Permit.where(
+          longitude: permit_data[:longitude],
+          latitude: permit_data[:latitude]
+        ).size
+        Permit.create_from_api_data(permit_data) if num == 0
       end
     end
   end
