@@ -31,7 +31,9 @@ class Permit < ActiveRecord::Base
   end
 
   def self.json_fields
-    " permit_number,
+    "
+      id,
+      permit_number,
       permit_type,
       agentphone,
       agent,
@@ -83,5 +85,11 @@ class Permit < ActiveRecord::Base
         self.contactphone = phone_number.format(:default_with_extension).gsub(/x/, '')
       end
     end
+  end
+
+  def ready_json
+    data = attributes
+    data[:type] = self.class.to_s
+    data
   end
 end

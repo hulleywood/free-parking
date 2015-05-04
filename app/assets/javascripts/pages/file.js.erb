@@ -1,0 +1,52 @@
+!function() {
+
+  var map,
+      kmlLayer;
+
+  function init() {
+    initMap();
+    initKml();
+    if ("<%= @url %>" != ''){
+      initKml("<%= @url %>");
+    }
+
+    $('#loadUrl').click(loadUrl);
+  };
+
+  function initMap() {
+    var sanFrancisco = new google.maps.LatLng(37.7833, -122.4167);
+    var mapOptions = {
+      zoom: 12,
+      center: sanFrancisco,
+      streetViewControl: false,
+      mapTypeControl: false
+    };
+    map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+  };
+
+  function initKml(url) {
+    kmlLayer = new google.maps.KmlLayer({ url: "http://apps.sfgov.org/datafiles/view.php?file=PublicWorks/StreetSweep_05.kml"});
+    kmlLayer.setMap(map);
+  };
+
+  function loadUrl(e) {
+    e.preventDefault();
+    var url = $('#txtUrl').val();
+    initKml(url);
+  };
+
+  function hideKml() {
+    kmlLayer.setMap(null);
+  };
+
+  function showKml() {
+    kmlLayer.setMap(map);
+  };
+
+  $(document).ready(function(){
+    if ($('body').hasClass('file')){
+      init();
+    }
+  });
+
+}();

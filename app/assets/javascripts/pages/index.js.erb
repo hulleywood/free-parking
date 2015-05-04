@@ -5,12 +5,16 @@
       jsonCluster,
       jsonInfoWindow,
       selectedMarker,
-      jsonMarkers = [];
+      jsonMarkers = [],
+      permitMarkers = [],
+      temporarySignMarkers = [];
 
   function init() {
     initMap();
-    initKml(function(){
-      initJson(showJson);
+    initJson(window.permit_url);
+    initJson(window.temporary_sign_url);
+    google.maps.event.addListenerOnce(map, 'idle', function(){
+      showJson();
     });
   };
 
@@ -25,13 +29,8 @@
     map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
   };
 
-  function initKml(callback) {
-    kmlLayer = new google.maps.KmlLayer({ url: window.kmlUrl });
-    callback();
-  };
-
-  function initJson(callback) {
-    $.getJSON( window.jsonUrl, function( data ) {
+  function initJson(url) {
+    $.getJSON( url, function( data ) {
       $.each( data, function( key, val ) {
         setMarker(val);
       });
@@ -39,28 +38,53 @@
       var clusterOptions = {
         minimumClusterSize: 6
       };
+
       jsonInfoWindow = new (GenCustomWindow())();
       jsonCluster = new MarkerClusterer(map, [], clusterOptions);
       $('.fixed-window').on('click', '.map-info-close', function(){
         $('.fixed-window').hide();
-        if (selectedMarker) selectedMarker.setIcon(regularMarkerIcon());
+        if (selectedMarker) {
+          if (selectedMarker.dataType == 'permit'){
+            selectedMarker.setIcon(regularPermitMarkerIcon());
+          } else {
+            selectedMarker.setIcon(regularTemporarySignMarkerIcon());
+          }
+        }
       })
-      callback();
     });
   };
 
-  function regularMarkerIcon(){
+  function regularPermitMarkerIcon(){
     return {
-      url:"<%= asset_path('marker-v1-black.png') %>",
+      url:"<%= asset_path('marker-hammer-black.png') %>",
       size:new google.maps.Size(40, 60),
       scaledSize:new google.maps.Size(20, 30),
       anchor:new google.maps.Point(10, 30)
     };
   };
 
-  function selectedMarkerIcon(){
+  function selectedPermitMarkerIcon(){
     return {
-      url:"<%= asset_path('marker-v1-green.png') %>",
+      url:"<%= asset_path('marker-hammer-green.png') %>",
+      size:new google.maps.Size(40, 60),
+      scaledSize:new google.maps.Size(20, 30),
+      anchor:new google.maps.Point(10, 30)
+    };
+  };
+
+
+  function regularTemporarySignMarkerIcon(){
+    return {
+      url:"<%= asset_path('marker-box-black.png') %>",
+      size:new google.maps.Size(40, 60),
+      scaledSize:new google.maps.Size(20, 30),
+      anchor:new google.maps.Point(10, 30)
+    };
+  };
+
+  function selectedTemporarySignMarkerIcon(){
+    return {
+      url:"<%= asset_path('marker-box-green.png') %>",
       size:new google.maps.Size(40, 60),
       scaledSize:new google.maps.Size(20, 30),
       anchor:new google.maps.Point(10, 30)
@@ -73,7 +97,7 @@
           map:map,
           position:position,
           draggable:false,
-          icon:regularMarkerIcon()
+          icon:regularPermitMarkerIcon()
         };
 
     var marker = new google.maps.Marker(opts);
@@ -83,23 +107,31 @@
       return function () {
         jQuery( '.fixed-window' ).show();
         jQuery( '.fixed-window' ).empty();
-        jQuery( '.fixed-window' ).append(createInfoWindowContent(data));
-        marker.setIcon(selectedMarkerIcon());
-        if (selectedMarker) selectedMarker.setIcon(regularMarkerIcon());
+
+        if(data.type == 'Permit'){
+          jQuery( '.fixed-window' ).append(createPermitInfoWindowContent(data));
+          marker.setIcon(selectedPermitMarkerIcon());
+          if (selectedMarker) selectedMarker.setIcon(regularPermitMarkerIcon());
+        } else {
+          jQuery( '.fixed-window' ).append(createTemporarySignInfoWindowContent(data));
+          marker.setIcon(selectedTemporarySignMarkerIcon());
+          if (selectedMarker) selectedMarker.setIcon(regularTemporarySignMarkerIcon());
+        }
         selectedMarker = marker;
       }
     })());
 
-    //google.maps.event.addListener(marker, 'click', function(){
-    //  jsonInfoWindow.setContent(createInfoWindowContent(data));
-    //  jsonInfoWindow.open(map, marker);
-    //  marker.setIcon(selectedIcon);
-    //  if (selectedMarker) selectedMarker.setIcon(regIcon);
-    //  selectedMarker = marker;
-    //});
   };
 
-  function createInfoWindowContent(data) {
+  function createTemporarySignInfoWindowContent(data) {
+    var content = "<div class='info-window-content'><div class='map-info-close glyphicon glyphicon-remove'></div><h4>" + data.request_details + 
+                  "</h4><p><strong>Location:</strong> " + data.address  + "</p>" + 
+                  "<p><strong>Type:</strong> " + data.request_type + "</p>";
+
+    return content;
+  };
+
+  function createPermitInfoWindowContent(data) {
     var content = "<div class='info-window-content'><div class='map-info-close glyphicon glyphicon-remove'></div><h4>" + data.permit_number + " (" +
                   data.permit_type + ")</h4><p><strong>Location:</strong> " + data.streetname  +
                   " between " + data.cross_street_1 + " and " + data.cross_street_2 +
@@ -130,6 +162,8 @@
   };
 
   function showJson() {
+    //jsonCluster.addMarkers(permitMarkers);
+    //jsonCluster.addMarkers(temporarySignMarkers);
     jsonCluster.addMarkers(jsonMarkers);
   };
 
@@ -138,6 +172,10 @@
     return text;
   };
 
-  $(document).ready(init);
+  $(document).ready(function(){
+    if ($('body').hasClass('index')){
+      init();
+    }
+  });
 
 }();

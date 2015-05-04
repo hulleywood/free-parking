@@ -4,8 +4,16 @@ module Tools
 
     def self.generate_from_permits
       file_path = "public/permits.json"
-      permits = Permit.select(Permit.json_fields)
-      File.write(file_path, permits.to_json)
+      data = Permit.select(Permit.json_fields)
+      pre_json = data.collect(&:ready_json)
+      File.write(file_path, pre_json.to_json)
+    end
+
+    def self.generate_from_temporary_signs
+      file_path = "public/temporary_signs.json"
+      data = TemporarySign.select(TemporarySign.json_fields)
+      pre_json = data.collect(&:ready_json)
+      File.write(file_path, pre_json.to_json)
     end
 
   end
