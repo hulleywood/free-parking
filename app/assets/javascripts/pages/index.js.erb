@@ -3,7 +3,6 @@
   var map,
       kmlLayer,
       jsonCluster,
-      jsonInfoWindow,
       selectedMarker,
       jsonMarkers = [],
       permitMarkers = [],
@@ -26,7 +25,9 @@
       streetViewControl: false,
       mapTypeControl: false
     };
+
     map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    google.maps.event.addListener(map, 'click', closeInfoWindow );
   };
 
   function initJson(url) {
@@ -39,20 +40,21 @@
         minimumClusterSize: 6
       };
 
-      jsonInfoWindow = new (GenCustomWindow())();
       jsonCluster = new MarkerClusterer(map, [], clusterOptions);
-      $('.fixed-window').on('click', '.map-info-close', function(){
-        $('.fixed-window').hide();
-        if (selectedMarker) {
-          if (selectedMarker.dataType == 'permit'){
-            selectedMarker.setIcon(regularPermitMarkerIcon());
-          } else {
-            selectedMarker.setIcon(regularTemporarySignMarkerIcon());
-          }
-        }
-      })
+      $('.fixed-window').on('click', '.map-info-close', closeInfoWindow );
     });
   };
+
+  function closeInfoWindow() {
+    $('.fixed-window').hide();
+    if (selectedMarker) {
+      if (selectedMarker.type == 'Permit'){
+        selectedMarker.setIcon(regularPermitMarkerIcon());
+      } else {
+        selectedMarker.setIcon(regularTemporarySignMarkerIcon());
+      }
+    }
+  }
 
   function regularPermitMarkerIcon(){
     return {
@@ -97,27 +99,39 @@
           map:map,
           position:position,
           draggable:false,
-          icon:regularPermitMarkerIcon()
+          icon: data.type=='Permit' ? regularPermitMarkerIcon() : regularTemporarySignMarkerIcon()
         };
 
     var marker = new google.maps.Marker(opts);
+        marker.type = data.type;
     jsonMarkers.push(marker);
 
     google.maps.event.addListener(marker, 'click', (function () {
       return function () {
-        jQuery( '.fixed-window' ).show();
         jQuery( '.fixed-window' ).empty();
 
-        if(data.type == 'Permit'){
-          jQuery( '.fixed-window' ).append(createPermitInfoWindowContent(data));
-          marker.setIcon(selectedPermitMarkerIcon());
-          if (selectedMarker) selectedMarker.setIcon(regularPermitMarkerIcon());
-        } else {
-          jQuery( '.fixed-window' ).append(createTemporarySignInfoWindowContent(data));
-          marker.setIcon(selectedTemporarySignMarkerIcon());
-          if (selectedMarker) selectedMarker.setIcon(regularTemporarySignMarkerIcon());
+        if (selectedMarker && selectedMarker.type == 'Permit'){
+          selectedMarker.setIcon(regularPermitMarkerIcon());
+        } else if (selectedMarker) {
+          selectedMarker.setIcon(regularTemporarySignMarkerIcon());
         }
-        selectedMarker = marker;
+
+        if ((selectedMarker && selectedMarker != marker) || !selectedMarker) {
+          jQuery( '.fixed-window' ).show();
+
+          if (data.type == 'Permit'){
+            jQuery( '.fixed-window' ).append(createPermitInfoWindowContent(data));
+            marker.setIcon(selectedPermitMarkerIcon());
+          } else {
+            jQuery( '.fixed-window' ).append(createTemporarySignInfoWindowContent(data));
+            marker.setIcon(selectedTemporarySignMarkerIcon());
+          }
+
+          selectedMarker = marker;
+        } else {
+          jQuery( '.fixed-window' ).hide();
+          selectedMarker = null;
+        }
       }
     })());
 
