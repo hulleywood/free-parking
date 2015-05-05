@@ -15,7 +15,7 @@ namespace :permits do
   end
 
   desc 'Get latest permits and update DB'
-  task add_new: :environment do
+  task create_new: :environment do
     tstart = Time.now
     Rails.logger.info "Starting to add new permits"
 

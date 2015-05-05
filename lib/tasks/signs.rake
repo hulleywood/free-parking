@@ -11,7 +11,7 @@ namespace :signs do
   end
 
   desc 'Get latest signs and update db'
-  task create_temporary_signs: :environment do
+  task create_new: :environment do
     tstart = Time.now
     Rails.logger.info "Starting to add new temporary signs"
 

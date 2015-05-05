@@ -6,6 +6,7 @@ class CreateTemporarySigns < ActiveRecord::Migration
       t.string  :category
       t.date    :opened
       t.date    :updated
+      t.date    :closed
       t.string  :request_details
       t.string  :request_type
       t.string  :responsible_agency
