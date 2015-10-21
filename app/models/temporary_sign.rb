@@ -26,11 +26,13 @@ class TemporarySign < ActiveRecord::Base
       end
     end
 
-    params[:latitude] = data[:point][:coordinates].last
-    params[:longitude] = data[:point][:coordinates].first
+    if data[:point].present?
+      params[:latitude] = data[:point][:coordinates].last
+      params[:longitude] = data[:point][:coordinates].first
 
-    unless create(params)
-      Rails.logger.error "Problem creating temporary sign: #{data[:case_id]}"
+      unless create(params)
+        Rails.logger.error "Problem creating temporary sign: #{data[:case_id]}"
+      end
     end
   end
 
