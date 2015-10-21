@@ -5,15 +5,15 @@ default: &default
 
 development:
   <<: *default
-  database: bookhouse_development
+  database: free_parking_development
 
 test:
   <<: *default
-  database: bookhouse_test
+  database: free_parking_test
 
 production:
   <<: *default
-  database: bookhouse_production
+  database: free_parking_production
   host: localhost
-  username: bookhouse
-  password: bookhouse
+  username: ENV['prod_username']
+  password: ENV['prod_pwd']
