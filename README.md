@@ -4,4 +4,6 @@ Displays a map showing temporary parking permits and associated information in S
 
 Cron to run on server:
 
+```
 0 0 * * * /bin/bash -l -c 'cd /home/rails/free-parking; RAILS_ENV=production rake permits:remove_old permits:create_new permits:create_json signs:remove_old signs:create_new signs:create_json' >> /var/log/cron.log 2>&1
+```
